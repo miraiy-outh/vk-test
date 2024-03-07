@@ -16,9 +16,9 @@ app.use(cors({
 const port = 3000;
 
 app.get('/api/groups', (req, res: Response<GetGroupsResponse>) => {
-    fs.readFile('groups.json', 'utf8', (err, data) => {
-        if (err) {
-            console.error('Ошибка при чтении файла:', err);
+    fs.readFile('groups.json', 'utf8', (error, data) => {
+        if (error) {
+            console.error('Ошибка при чтении файла:', error);
             res.status(500).send({
                 result: 0,
                 data: undefined

@@ -1,11 +1,11 @@
-import { GROUPS_CHANGE, GROUPS_FILTER_CHANGE, GROUPS_INIT } from "./groups-constants"
+import { GROUPS_CHANGE, GROUPS_COLOR_CHANGE, GROUPS_INIT, GROUPS_TYPE_OF_GROUP_CHANGE } from "./groups-constants"
 
 type TUser = {
     first_name: string,
     last_name: string
 }
 
-type TGroups = {
+export type TGroups = {
     id: number,
     name: string,
     closed: boolean,
@@ -36,20 +36,24 @@ type TGroupsChangeAction = {
     type: typeof GROUPS_CHANGE
 }
 
-type TGroupsFilterGetAction = {
-    type: typeof GROUPS_FILTER_CHANGE,
-    closed: boolean | 'all',
+type TGroupsColorFilterChangeAction = {
+    type: typeof GROUPS_COLOR_CHANGE,
     color: string
 }
 
-type TGroupsActions = TGroupsInitAction | TGroupsChangeAction | TGroupsFilterGetAction
+type TGroupsTypeOfGroupFilterChangeAction = {
+    type: typeof GROUPS_TYPE_OF_GROUP_CHANGE,
+    closed: boolean | 'all'
+}
+
+type TGroupsActions = TGroupsInitAction | TGroupsChangeAction | TGroupsColorFilterChangeAction | TGroupsTypeOfGroupFilterChangeAction
 
 const defaultState: TGroupsState = {
     groups: [],
     filteredGroups: [],
     filter: {
         closed: 'all',
-        color: ''
+        color: 'all'
     },
     colors: [],
     isLoading: true
@@ -75,24 +79,64 @@ export function groupsReducer(state = defaultState, action: TGroupsActions): TGr
             }
         }
 
-        case GROUPS_FILTER_CHANGE: {
+        case GROUPS_TYPE_OF_GROUP_CHANGE: {
             return {
                 ...state,
                 filter: {
-                    closed: action.closed,
+                    ...state.filter,
+                    closed: action.closed
+                }
+            }
+        }
+
+        case GROUPS_COLOR_CHANGE: {
+            return {
+                ...state,
+                filter: {
+                    ...state.filter,
                     color: action.color
                 }
             }
         }
 
         case GROUPS_CHANGE: {
-            const filteredGroups = state.groups.filter((group) => {
-                return group.closed === state.filter.closed && group.avatar_color === state.filter.color  
-            })
+            let filteredGroups = []
+            if (state.filter.closed !== 'all' && state.filter.color !== 'all') {
+                filteredGroups = state.groups.filter((group) => {
+                        return group.closed === state.filter.closed && group.avatar_color === state.filter.color  
+                })
+
+                return {
+                    ...state,
+                    filteredGroups
+                }
+            }
+
+            if (state.filter.closed !== 'all') {
+                filteredGroups = state.groups.filter((group) => {
+                    return group.closed === state.filter.closed  
+                })
+
+                return {
+                    ...state,
+                    filteredGroups
+                }
+            }
+
+            if (state.filter.color !== 'all') {
+                filteredGroups = state.groups.filter((group) => {
+                    return group.avatar_color === state.filter.color  
+                })
+
+                return {
+                    ...state,
+                    filteredGroups
+                }
+            }
 
             return {
                 ...state,
-                filteredGroups
+                filteredGroups: state.groups
             }
         }
 
