@@ -2,7 +2,7 @@ import { FormItem, Group, Header, NativeSelect } from "@vkontakte/vkui";
 import { useDispatch, useSelector } from "../../services/redux-hooks";
 import { groupsColorsSelector, groupsFilterSelector } from "../../services/groups-selectors";
 import { ChangeEvent } from "react";
-import { GROUPS_CHANGE, GROUPS_COLOR_CHANGE, GROUPS_TYPE_OF_GROUP_CHANGE } from "../../services/groups-constants";
+import { GROUPS_CHANGE, GROUPS_COLOR_CHANGE, GROUPS_TYPE_OF_GROUP_CHANGE, GROUPS_WITH_FRIENDS_CHANGE } from "../../services/groups-constants";
 
 export function Filter() {
     const colors = useSelector(groupsColorsSelector)
@@ -14,13 +14,33 @@ export function Filter() {
         if (typeOfGroup === 'true' || typeOfGroup === 'false') {
             dispatch({
                 type: GROUPS_TYPE_OF_GROUP_CHANGE,
-                closed: Boolean(typeOfGroup)
+                closed: typeOfGroup === 'true' ? true : false
             })
         }
         else {
             dispatch({
                 type: GROUPS_TYPE_OF_GROUP_CHANGE,
                 closed: 'all'
+            })
+        }
+
+        dispatch({
+            type: GROUPS_CHANGE
+        })
+    }
+
+    const handleWithFriendsChange = (event: ChangeEvent<HTMLSelectElement>) => {
+        const friends = event.target.value
+        if (friends === 'true' || friends === 'false') {
+            dispatch({
+                type: GROUPS_WITH_FRIENDS_CHANGE,
+                friends: friends === 'true' ? true : false
+            })
+        }
+        else {
+            dispatch({
+                type: GROUPS_WITH_FRIENDS_CHANGE,
+                friends: 'all'
             })
         }
 
@@ -71,6 +91,21 @@ export function Filter() {
                     {colors.map((color) => {
                             return <option value={color}>{color}</option>
                     })}
+                </NativeSelect>
+            </FormItem>
+
+            <FormItem
+                top="Друзья в группе"
+                htmlFor="select-id"
+            >
+                <NativeSelect 
+                    id="select-id"
+                    onChange={handleWithFriendsChange}
+                    value={`${filter.friends}`}
+                >
+                    <option value="all">Все</option>
+                    <option value="true">Есть</option>
+                    <option value="false">Нет</option>
                 </NativeSelect>
             </FormItem>
         </Group>

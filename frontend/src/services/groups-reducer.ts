@@ -1,4 +1,4 @@
-import { GROUPS_CHANGE, GROUPS_COLOR_CHANGE, GROUPS_INIT, GROUPS_TYPE_OF_GROUP_CHANGE } from "./groups-constants"
+import { GROUPS_CHANGE, GROUPS_COLOR_CHANGE, GROUPS_INIT, GROUPS_TYPE_OF_GROUP_CHANGE, GROUPS_WITH_FRIENDS_CHANGE } from "./groups-constants"
 
 type TUser = {
     first_name: string,
@@ -16,6 +16,7 @@ export type TGroups = {
 
 type TFilter = {
     closed: boolean | 'all',
+    friends: boolean | 'all'
     color: string
 }
 
@@ -46,13 +47,19 @@ type TGroupsTypeOfGroupFilterChangeAction = {
     closed: boolean | 'all'
 }
 
-type TGroupsActions = TGroupsInitAction | TGroupsChangeAction | TGroupsColorFilterChangeAction | TGroupsTypeOfGroupFilterChangeAction
+type TGroupsWithFriendsFilterChangeAction = {
+    type: typeof GROUPS_WITH_FRIENDS_CHANGE,
+    friends: boolean | 'all'
+}
+
+type TGroupsActions = TGroupsInitAction | TGroupsChangeAction | TGroupsColorFilterChangeAction | TGroupsTypeOfGroupFilterChangeAction | TGroupsWithFriendsFilterChangeAction
 
 const defaultState: TGroupsState = {
     groups: [],
     filteredGroups: [],
     filter: {
         closed: 'all',
+        friends: 'all',
         color: 'all'
     },
     colors: [],
@@ -99,44 +106,46 @@ export function groupsReducer(state = defaultState, action: TGroupsActions): TGr
             }
         }
 
-        case GROUPS_CHANGE: {
-            let filteredGroups = []
-            if (state.filter.closed !== 'all' && state.filter.color !== 'all') {
-                filteredGroups = state.groups.filter((group) => {
-                        return group.closed === state.filter.closed && group.avatar_color === state.filter.color  
-                })
-
-                return {
-                    ...state,
-                    filteredGroups
+        case GROUPS_WITH_FRIENDS_CHANGE: {
+            return {
+                ...state,
+                filter: {
+                    ...state.filter,
+                    friends: action.friends
                 }
+            }
+        }
+
+        case GROUPS_CHANGE: {
+            let filteredGroups = state.groups
+
+            if (state.filter.friends === true) {
+                filteredGroups = filteredGroups.filter((group) => {
+                    return Object.keys(group).includes('friends') === true
+                });
+            } 
+            
+            if (state.filter.friends === false) {
+                filteredGroups = filteredGroups.filter((group) => {
+                    return Object.keys(group).includes('friends') === false
+                });
             }
 
             if (state.filter.closed !== 'all') {
-                filteredGroups = state.groups.filter((group) => {
+                filteredGroups = filteredGroups.filter((group) => {
                     return group.closed === state.filter.closed  
                 })
-
-                return {
-                    ...state,
-                    filteredGroups
-                }
             }
 
             if (state.filter.color !== 'all') {
-                filteredGroups = state.groups.filter((group) => {
+                filteredGroups = filteredGroups.filter((group) => {
                     return group.avatar_color === state.filter.color  
                 })
-
-                return {
-                    ...state,
-                    filteredGroups
-                }
             }
 
             return {
                 ...state,
-                filteredGroups: state.groups
+                filteredGroups
             }
         }
 
