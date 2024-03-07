@@ -9,8 +9,8 @@ export function Groups() {
     return (
         <>
         {
-            groups.map((group) => {
-                return <Group>
+            groups.map((group, i) => {
+                return <Group key={i}>
                         <SimpleCell
                             before={<Avatar 
                                         size={100}
@@ -45,8 +45,8 @@ export function Groups() {
                             </Accordion.Summary>
                             <Accordion.Content>
                                 {
-                                    group.friends.map((friend) => {
-                                        return <SimpleCell>{friend.first_name} {friend.last_name}</SimpleCell>
+                                    group.friends.map((friend, j) => {
+                                        return <SimpleCell key={`friend${i}${j}`}>{friend.first_name} {friend.last_name}</SimpleCell>
                                     })
                                 }
                                 

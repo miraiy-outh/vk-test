@@ -87,9 +87,9 @@ export function Filter() {
                     onChange={handleColorChange}
                     value={`${filter.color}`}
                 >
-                    <option value='all'>Все</option>
+                    <option key='all' value='all'>Все</option>
                     {colors.map((color) => {
-                            return <option value={color}>{color}</option>
+                            return <option key={color} value={color}>{color}</option>
                     })}
                 </NativeSelect>
             </FormItem>
