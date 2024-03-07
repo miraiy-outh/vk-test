@@ -4,6 +4,7 @@ import { getGroups } from "../api";
 import { useDispatch } from "../services/redux-hooks";
 import { useEffect } from "react";
 import { GROUPS_INIT } from "../services/groups-constants";
+import { Groups } from "./groups/groups";
 
 export function GroupPanel() {
     const dispatch = useDispatch()
@@ -22,6 +23,7 @@ export function GroupPanel() {
     return (
         <Panel>
             <Filter></Filter>
+            <Groups></Groups>
         </Panel>
     )
 }
