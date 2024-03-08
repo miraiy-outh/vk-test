@@ -1,12 +1,13 @@
 import { FormItem, Group, Header, NativeSelect } from "@vkontakte/vkui";
 import { useDispatch, useSelector } from "../../services/redux-hooks";
-import { groupsColorsSelector, groupsFilterSelector } from "../../services/groups-selectors";
+import { groupsColorsSelector, groupsFilterSelector, groupsLoadingSelector } from "../../services/groups-selectors";
 import { ChangeEvent } from "react";
 import { GROUPS_CHANGE, GROUPS_COLOR_CHANGE, GROUPS_TYPE_OF_GROUP_CHANGE, GROUPS_WITH_FRIENDS_CHANGE } from "../../services/groups-constants";
 
 export function Filter() {
     const colors = useSelector(groupsColorsSelector)
     const filter = useSelector(groupsFilterSelector)
+    const isLoading = useSelector(groupsLoadingSelector)
     const dispatch = useDispatch()
 
     const handleTypeOfGroupChange = (event: ChangeEvent<HTMLSelectElement>) => {
@@ -71,6 +72,7 @@ export function Filter() {
                     id="select-id"
                     onChange={handleTypeOfGroupChange}
                     value={`${filter.closed}`}
+                    disabled={isLoading}
                 >
                     <option value="all">Все</option>
                     <option value="true">Закрытая</option>
@@ -86,6 +88,7 @@ export function Filter() {
                     id="select-id"
                     onChange={handleColorChange}
                     value={`${filter.color}`}
+                    disabled={isLoading}
                 >
                     <option key='all' value='all'>Все</option>
                     {colors.map((color) => {
@@ -102,6 +105,7 @@ export function Filter() {
                     id="select-id"
                     onChange={handleWithFriendsChange}
                     value={`${filter.friends}`}
+                    disabled={isLoading}
                 >
                     <option value="all">Все</option>
                     <option value="true">Есть</option>

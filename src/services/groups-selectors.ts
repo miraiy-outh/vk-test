@@ -15,3 +15,7 @@ export function groupsColorsSelector(state: RootState) {
 export function groupsLoadingSelector(state: RootState) {
     return state.groupsData.isLoading
 }
+
+export function groupsErrorSelector(state: RootState) {
+    return state.groupsData.isError
+}

@@ -1,11 +1,18 @@
-import { Accordion, Avatar, Group, Header, SimpleCell } from "@vkontakte/vkui"
-import { groupsSelector } from "../../services/groups-selectors"
+import { Accordion, Avatar, Group, Header, SimpleCell, Spinner } from "@vkontakte/vkui"
+import { groupsLoadingSelector, groupsSelector } from "../../services/groups-selectors"
 import { useSelector } from "../../services/redux-hooks"
 import React from "react";
 
 export function Groups() {
     const [openId, setOpenId] = React.useState(2);
     const groups = useSelector(groupsSelector)
+    const isLoading = useSelector(groupsLoadingSelector)
+
+    if (isLoading) {
+        return (
+            <Spinner size="large"/>
+        )
+    }
     return (
         <>
         {

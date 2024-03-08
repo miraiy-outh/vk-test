@@ -1,4 +1,4 @@
-import { GROUPS_CHANGE, GROUPS_COLOR_CHANGE, GROUPS_INIT, GROUPS_TYPE_OF_GROUP_CHANGE, GROUPS_WITH_FRIENDS_CHANGE } from "./groups-constants"
+import { GROUPS_CHANGE, GROUPS_COLOR_CHANGE, GROUPS_ERROR_CHANGE, GROUPS_INIT, GROUPS_LOADING_CHANGE, GROUPS_TYPE_OF_GROUP_CHANGE, GROUPS_WITH_FRIENDS_CHANGE } from "./groups-constants"
 
 type TUser = {
     first_name: string,
@@ -25,7 +25,8 @@ type TGroupsState = {
     filteredGroups: TGroups[],
     filter: TFilter,
     colors: string[],
-    isLoading: boolean
+    isLoading: boolean,
+    isError: boolean
 }
 
 type TGroupsInitAction = {
@@ -52,7 +53,15 @@ type TGroupsWithFriendsFilterChangeAction = {
     friends: boolean | 'all'
 }
 
-type TGroupsActions = TGroupsInitAction | TGroupsChangeAction | TGroupsColorFilterChangeAction | TGroupsTypeOfGroupFilterChangeAction | TGroupsWithFriendsFilterChangeAction
+type TGroupsLoadingChangeAction = {
+    type: typeof GROUPS_LOADING_CHANGE
+}
+
+type TGroupsErrorChangeAction = {
+    type: typeof GROUPS_ERROR_CHANGE
+}
+
+type TGroupsActions = TGroupsInitAction | TGroupsChangeAction | TGroupsColorFilterChangeAction | TGroupsTypeOfGroupFilterChangeAction | TGroupsWithFriendsFilterChangeAction | TGroupsLoadingChangeAction | TGroupsErrorChangeAction
 
 const defaultState: TGroupsState = {
     groups: [],
@@ -63,7 +72,8 @@ const defaultState: TGroupsState = {
         color: 'all'
     },
     colors: [],
-    isLoading: true
+    isLoading: true,
+    isError: false
 }
 
 export function groupsReducer(state = defaultState, action: TGroupsActions): TGroupsState {
@@ -121,13 +131,13 @@ export function groupsReducer(state = defaultState, action: TGroupsActions): TGr
 
             if (state.filter.friends === true) {
                 filteredGroups = filteredGroups.filter((group) => {
-                    return Object.keys(group).includes('friends') === true
+                    return group.friends && group.friends.length > 0
                 });
             } 
             
             if (state.filter.friends === false) {
                 filteredGroups = filteredGroups.filter((group) => {
-                    return Object.keys(group).includes('friends') === false
+                    return !group.friends || group.friends.length === 0
                 });
             }
 
@@ -146,6 +156,20 @@ export function groupsReducer(state = defaultState, action: TGroupsActions): TGr
             return {
                 ...state,
                 filteredGroups
+            }
+        }
+
+        case GROUPS_LOADING_CHANGE: {
+            return {
+                ...state,
+                isLoading: !state.isLoading
+            }
+        }
+
+        case GROUPS_ERROR_CHANGE: {
+            return {
+                ...state,
+                isError: !state.isError
             }
         }
 
