@@ -1,8 +1,6 @@
 import { delay } from "./utils/delay";
 import { GetGroupsResponse } from "./types";
 
-const url = 'http://localhost:3000/api/groups'
-
 export async function getGroups(): Promise<GetGroupsResponse> {
     const requestOptions = {
         method: 'GET',
